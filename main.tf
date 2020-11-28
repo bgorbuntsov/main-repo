@@ -27,6 +27,7 @@ resource "aws_security_group" "allow_ssh_web" {
 resource "aws_key_pair" "deployer" {
   key_name   = "autoload-deployer-local-key"
   public_key = var.my_ssh_pubkey
+  tags = local.tags
 }
 
 data "aws_ami" "amazon-linux-2" {
