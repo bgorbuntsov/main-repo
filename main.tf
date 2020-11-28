@@ -43,8 +43,6 @@ resource "aws_instance" "web" {
   user_data              = file("deploy.sh")
 }
 
-
-
 output "instance_ip" {
   value       = aws_instance.web.public_ip
   description = "IP attached to host"
