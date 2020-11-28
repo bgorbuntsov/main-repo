@@ -45,12 +45,12 @@ resource "aws_instance" "web" {
 
 resource "aws_eip" "static_ip" {
   instance = aws_instance.web.id
-  tags     = merge(local.tags, map("description", "static_ip_address_for_${aws_instance.web}"))
+  tags     = merge(local.tags, map("description", "static_ip_address_for_${aws_instance.web.key_name}"))
 }
 
 
 output "instance_ip" {
-  value       = aws_instance.web.public_ip
+  value       = aws_eip.static_ip.public_ip
   description = "IP attached to host"
 }
 
