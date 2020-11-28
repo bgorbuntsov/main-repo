@@ -45,7 +45,8 @@ resource "aws_instance" "web" {
 
 resource "aws_eip" "static_ip" {
   instance = aws_instance.web.id
-  tags     = merge(local.tags, map("description", "static_ip_address_for_${aws_instance.web.key_name}"))
+  tags     = merge(local.tags, map("description", "static_ip_address_for_${aws_instance.web.id}"))
 }
 
 data "aws_caller_identity" "current" {}
+data "aws_region" "current" {}
