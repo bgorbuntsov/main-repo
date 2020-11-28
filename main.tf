@@ -3,18 +3,17 @@
 resource "aws_security_group" "allow_ssh_web" {
   name        = "allow_ssh_web"
   description = "Allow SSH (22TCP) and WEB (80TCP) inbound traffic"
-  ingress {
-    to_port     = 22
-    from_port   = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+
+  dynamic "ingress" {
+    for_each = [22, 80]
+    content {
+      to_port     = ingress.value
+      from_port   = ingress.value
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
   }
-  ingress {
-    to_port     = 80
-    from_port   = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+
   egress {
     from_port   = 0
     to_port     = 0
@@ -27,7 +26,7 @@ resource "aws_security_group" "allow_ssh_web" {
 resource "aws_key_pair" "deployer" {
   key_name   = "autoload-deployer-local-key"
   public_key = var.my_ssh_pubkey
-  tags = local.tags
+  tags       = local.tags
 }
 
 data "aws_ami" "amazon-linux-2" {
@@ -43,6 +42,12 @@ resource "aws_instance" "web" {
   key_name               = "autoload-deployer-local-key"
   user_data              = file("deploy.sh")
 }
+
+resource "aws_eip" "static_ip" {
+  instance = aws_instance.web.id
+  tags     = merge(local.tags, map("description", "static_ip_address_for_${aws_instance.web}"))
+}
+
 
 output "instance_ip" {
   value       = aws_instance.web.public_ip
