@@ -1,5 +1,16 @@
 ### ---------------------------- Terraform v0.12.16 ----------------------------- ###
 
+variable "env" {
+  default = "dev"
+}
+
+variable "ec2_size" {
+  default = {
+    "prod" = "t3.micro"
+    "dev"  = "t2.micro"
+  }
+}
+
 resource "aws_security_group" "allow_ssh_web" {
   name        = "allow_ssh_web"
   description = "Allow SSH (22TCP) and WEB (80TCP) inbound traffic"
@@ -36,7 +47,7 @@ data "aws_ami" "amazon-linux-2" {
 
 resource "aws_instance" "web" {
   ami                    = data.aws_ami.amazon-linux-2.id
-  instance_type          = "t2.micro"
+  instance_type          = lookup(var.ec2_size, var.env)
   vpc_security_group_ids = [aws_security_group.allow_ssh_web.id]
   tags                   = local.tags
   key_name               = "autoload-deployer-local-key"
