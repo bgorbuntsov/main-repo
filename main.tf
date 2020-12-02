@@ -6,8 +6,9 @@ variable "env" {
 
 variable "ec2_size" {
   default = {
-    "prod" = "t3.micro"
-    "dev"  = "t2.micro"
+    "prod"  = "t3.micro"
+    "dev"   = "t2.micro"
+    "stage" = "t2.nano"
   }
 }
 
